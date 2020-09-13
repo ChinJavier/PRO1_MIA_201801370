@@ -41,30 +41,25 @@ state 4
 	atributosMkDisk  goto 9
 
 state 5
-	main:  T_RMDISK.'-' T_PATH 
+	main:  T_RMDISK.'-' T_PATH T_ARROW T_ROUTE 
 
 	'-'  shift 11
 	.  error
 
 
 state 6
-	main:  T_FDISK.atributosFDisk 
+	main:  T_FDISK.listaFDisk 
 
-	T_PATH  shift 15
-	T_SIZE  shift 13
-	T_UNIT  shift 14
-	T_TYPE  shift 16
-	T_FIT  shift 17
-	T_DELETE  shift 18
-	T_ADD  shift 19
+	'-'  shift 14
 	.  error
 
-	atributosFDisk  goto 12
+	listaFDisk  goto 12
+	atributosFDisk  goto 13
 
 state 7
 	main:  T_EXEC '-'.T_PATH T_ARROW T_ROUTE 
 
-	T_PATH  shift 20
+	T_PATH  shift 15
 	.  error
 
 
@@ -75,7 +70,7 @@ state 8
 	'-'  shift 10
 	.  reduce 3 (src line 33)
 
-	atributosMkDisk  goto 21
+	atributosMkDisk  goto 16
 
 state 9
 	listaMkDisk:  atributosMkDisk.    (7)
@@ -89,196 +84,357 @@ state 10
 	atributosMkDisk:  '-'.T_NAME T_ARROW T_ARC_DKS 
 	atributosMkDisk:  '-'.T_UNIT T_ARROW T_LETRA 
 
-	T_PATH  shift 23
-	T_SIZE  shift 22
-	T_NAME  shift 24
-	T_UNIT  shift 25
+	T_PATH  shift 18
+	T_SIZE  shift 17
+	T_NAME  shift 19
+	T_UNIT  shift 20
 	.  error
 
 
 state 11
-	main:  T_RMDISK '-'.T_PATH 
+	main:  T_RMDISK '-'.T_PATH T_ARROW T_ROUTE 
 
-	T_PATH  shift 26
+	T_PATH  shift 21
 	.  error
 
 
 state 12
-	main:  T_FDISK atributosFDisk.    (5)
+	main:  T_FDISK listaFDisk.    (5)
+	listaFDisk:  listaFDisk.atributosFDisk 
 
+	'-'  shift 14
 	.  reduce 5 (src line 35)
 
+	atributosFDisk  goto 22
 
 state 13
-	atributosFDisk:  T_SIZE.T_LETRA 
-
-	T_LETRA  shift 27
-	.  error
-
-
-state 14
-	atributosFDisk:  T_UNIT.    (13)
+	listaFDisk:  atributosFDisk.    (13)
 
 	.  reduce 13 (src line 49)
 
 
+state 14
+	atributosFDisk:  '-'.T_SIZE T_ARROW T_NUMERO 
+	atributosFDisk:  '-'.T_UNIT T_ARROW T_LETRA 
+	atributosFDisk:  '-'.T_PATH T_ARROW T_ROUTE 
+	atributosFDisk:  '-'.T_TYPE T_ARROW T_LETRA 
+	atributosFDisk:  '-'.T_FIT T_ARROW T_ID 
+	atributosFDisk:  '-'.T_DELETE T_ARROW T_ID 
+	atributosFDisk:  '-'.T_ADD T_ARROW T_NUMERO 
+	atributosFDisk:  '-'.T_NAME T_ARROW T_ID 
+
+	T_PATH  shift 25
+	T_SIZE  shift 23
+	T_NAME  shift 30
+	T_UNIT  shift 24
+	T_TYPE  shift 26
+	T_FIT  shift 27
+	T_DELETE  shift 28
+	T_ADD  shift 29
+	.  error
+
+
 state 15
-	atributosFDisk:  T_PATH.    (14)
-
-	.  reduce 14 (src line 50)
-
-
-state 16
-	atributosFDisk:  T_TYPE.    (15)
-
-	.  reduce 15 (src line 51)
-
-
-state 17
-	atributosFDisk:  T_FIT.    (16)
-
-	.  reduce 16 (src line 52)
-
-
-state 18
-	atributosFDisk:  T_DELETE.    (17)
-
-	.  reduce 17 (src line 53)
-
-
-state 19
-	atributosFDisk:  T_ADD.    (18)
-
-	.  reduce 18 (src line 54)
-
-
-state 20
 	main:  T_EXEC '-' T_PATH.T_ARROW T_ROUTE 
-
-	T_ARROW  shift 28
-	.  error
-
-
-state 21
-	listaMkDisk:  listaMkDisk atributosMkDisk.    (6)
-
-	.  reduce 6 (src line 38)
-
-
-state 22
-	atributosMkDisk:  '-' T_SIZE.T_ARROW T_NUMERO 
-
-	T_ARROW  shift 29
-	.  error
-
-
-state 23
-	atributosMkDisk:  '-' T_PATH.T_ARROW T_ROUTE 
-
-	T_ARROW  shift 30
-	.  error
-
-
-state 24
-	atributosMkDisk:  '-' T_NAME.T_ARROW T_ARC_DKS 
 
 	T_ARROW  shift 31
 	.  error
 
 
-state 25
-	atributosMkDisk:  '-' T_UNIT.T_ARROW T_LETRA 
+state 16
+	listaMkDisk:  listaMkDisk atributosMkDisk.    (6)
+
+	.  reduce 6 (src line 38)
+
+
+state 17
+	atributosMkDisk:  '-' T_SIZE.T_ARROW T_NUMERO 
 
 	T_ARROW  shift 32
 	.  error
 
 
-state 26
-	main:  T_RMDISK '-' T_PATH.    (4)
+state 18
+	atributosMkDisk:  '-' T_PATH.T_ARROW T_ROUTE 
 
-	.  reduce 4 (src line 34)
+	T_ARROW  shift 33
+	.  error
 
 
-state 27
-	atributosFDisk:  T_SIZE T_LETRA.    (12)
+state 19
+	atributosMkDisk:  '-' T_NAME.T_ARROW T_ARC_DKS 
+
+	T_ARROW  shift 34
+	.  error
+
+
+state 20
+	atributosMkDisk:  '-' T_UNIT.T_ARROW T_LETRA 
+
+	T_ARROW  shift 35
+	.  error
+
+
+state 21
+	main:  T_RMDISK '-' T_PATH.T_ARROW T_ROUTE 
+
+	T_ARROW  shift 36
+	.  error
+
+
+state 22
+	listaFDisk:  listaFDisk atributosFDisk.    (12)
 
 	.  reduce 12 (src line 48)
 
 
-state 28
-	main:  T_EXEC '-' T_PATH T_ARROW.T_ROUTE 
+state 23
+	atributosFDisk:  '-' T_SIZE.T_ARROW T_NUMERO 
 
-	T_ROUTE  shift 33
+	T_ARROW  shift 37
+	.  error
+
+
+state 24
+	atributosFDisk:  '-' T_UNIT.T_ARROW T_LETRA 
+
+	T_ARROW  shift 38
+	.  error
+
+
+state 25
+	atributosFDisk:  '-' T_PATH.T_ARROW T_ROUTE 
+
+	T_ARROW  shift 39
+	.  error
+
+
+state 26
+	atributosFDisk:  '-' T_TYPE.T_ARROW T_LETRA 
+
+	T_ARROW  shift 40
+	.  error
+
+
+state 27
+	atributosFDisk:  '-' T_FIT.T_ARROW T_ID 
+
+	T_ARROW  shift 41
+	.  error
+
+
+state 28
+	atributosFDisk:  '-' T_DELETE.T_ARROW T_ID 
+
+	T_ARROW  shift 42
 	.  error
 
 
 state 29
-	atributosMkDisk:  '-' T_SIZE T_ARROW.T_NUMERO 
+	atributosFDisk:  '-' T_ADD.T_ARROW T_NUMERO 
 
-	T_NUMERO  shift 34
+	T_ARROW  shift 43
 	.  error
 
 
 state 30
-	atributosMkDisk:  '-' T_PATH T_ARROW.T_ROUTE 
+	atributosFDisk:  '-' T_NAME.T_ARROW T_ID 
 
-	T_ROUTE  shift 35
+	T_ARROW  shift 44
 	.  error
 
 
 state 31
-	atributosMkDisk:  '-' T_NAME T_ARROW.T_ARC_DKS 
+	main:  T_EXEC '-' T_PATH T_ARROW.T_ROUTE 
 
-	T_ARC_DKS  shift 36
+	T_ROUTE  shift 45
 	.  error
 
 
 state 32
-	atributosMkDisk:  '-' T_UNIT T_ARROW.T_LETRA 
+	atributosMkDisk:  '-' T_SIZE T_ARROW.T_NUMERO 
 
-	T_LETRA  shift 37
+	T_NUMERO  shift 46
 	.  error
 
 
 state 33
+	atributosMkDisk:  '-' T_PATH T_ARROW.T_ROUTE 
+
+	T_ROUTE  shift 47
+	.  error
+
+
+state 34
+	atributosMkDisk:  '-' T_NAME T_ARROW.T_ARC_DKS 
+
+	T_ARC_DKS  shift 48
+	.  error
+
+
+state 35
+	atributosMkDisk:  '-' T_UNIT T_ARROW.T_LETRA 
+
+	T_LETRA  shift 49
+	.  error
+
+
+state 36
+	main:  T_RMDISK '-' T_PATH T_ARROW.T_ROUTE 
+
+	T_ROUTE  shift 50
+	.  error
+
+
+state 37
+	atributosFDisk:  '-' T_SIZE T_ARROW.T_NUMERO 
+
+	T_NUMERO  shift 51
+	.  error
+
+
+state 38
+	atributosFDisk:  '-' T_UNIT T_ARROW.T_LETRA 
+
+	T_LETRA  shift 52
+	.  error
+
+
+state 39
+	atributosFDisk:  '-' T_PATH T_ARROW.T_ROUTE 
+
+	T_ROUTE  shift 53
+	.  error
+
+
+state 40
+	atributosFDisk:  '-' T_TYPE T_ARROW.T_LETRA 
+
+	T_LETRA  shift 54
+	.  error
+
+
+state 41
+	atributosFDisk:  '-' T_FIT T_ARROW.T_ID 
+
+	T_ID  shift 55
+	.  error
+
+
+state 42
+	atributosFDisk:  '-' T_DELETE T_ARROW.T_ID 
+
+	T_ID  shift 56
+	.  error
+
+
+state 43
+	atributosFDisk:  '-' T_ADD T_ARROW.T_NUMERO 
+
+	T_NUMERO  shift 57
+	.  error
+
+
+state 44
+	atributosFDisk:  '-' T_NAME T_ARROW.T_ID 
+
+	T_ID  shift 58
+	.  error
+
+
+state 45
 	main:  T_EXEC '-' T_PATH T_ARROW T_ROUTE.    (1)
 
 	.  reduce 1 (src line 31)
 
 
-state 34
+state 46
 	atributosMkDisk:  '-' T_SIZE T_ARROW T_NUMERO.    (8)
 
 	.  reduce 8 (src line 42)
 
 
-state 35
+state 47
 	atributosMkDisk:  '-' T_PATH T_ARROW T_ROUTE.    (9)
 
 	.  reduce 9 (src line 43)
 
 
-state 36
+state 48
 	atributosMkDisk:  '-' T_NAME T_ARROW T_ARC_DKS.    (10)
 
 	.  reduce 10 (src line 44)
 
 
-state 37
+state 49
 	atributosMkDisk:  '-' T_UNIT T_ARROW T_LETRA.    (11)
 
 	.  reduce 11 (src line 45)
 
 
-23 terminals, 5 nonterminals
-19 grammar rules, 38/8000 states
+state 50
+	main:  T_RMDISK '-' T_PATH T_ARROW T_ROUTE.    (4)
+
+	.  reduce 4 (src line 34)
+
+
+state 51
+	atributosFDisk:  '-' T_SIZE T_ARROW T_NUMERO.    (14)
+
+	.  reduce 14 (src line 52)
+
+
+state 52
+	atributosFDisk:  '-' T_UNIT T_ARROW T_LETRA.    (15)
+
+	.  reduce 15 (src line 53)
+
+
+state 53
+	atributosFDisk:  '-' T_PATH T_ARROW T_ROUTE.    (16)
+
+	.  reduce 16 (src line 54)
+
+
+state 54
+	atributosFDisk:  '-' T_TYPE T_ARROW T_LETRA.    (17)
+
+	.  reduce 17 (src line 55)
+
+
+state 55
+	atributosFDisk:  '-' T_FIT T_ARROW T_ID.    (18)
+
+	.  reduce 18 (src line 56)
+
+
+state 56
+	atributosFDisk:  '-' T_DELETE T_ARROW T_ID.    (19)
+
+	.  reduce 19 (src line 57)
+
+
+state 57
+	atributosFDisk:  '-' T_ADD T_ARROW T_NUMERO.    (20)
+
+	.  reduce 20 (src line 58)
+
+
+state 58
+	atributosFDisk:  '-' T_NAME T_ARROW T_ID.    (21)
+
+	.  reduce 21 (src line 59)
+
+
+23 terminals, 6 nonterminals
+22 grammar rules, 59/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
-54 working sets used
-memory: parser 4/120000
+55 working sets used
+memory: parser 6/120000
 0 extra closures
-33 shift entries, 1 exceptions
-5 goto entries
+53 shift entries, 1 exceptions
+7 goto entries
 0 entries saved by goto default
-Optimizer space used: output 37/120000
-37 table entries, 0 zero
+Optimizer space used: output 58/120000
+58 table entries, 0 zero
 maximum spread: 23, maximum offset: 23

@@ -19,6 +19,8 @@ var RutaSint string = ""
 var NameSint string = ""
 var DimenSin string = "v"
 
+var TypePartSin string = ""
+
 var ReporteMbrInit string = "digraph G{ tbl [shape=plaintext label=< <table border='0' cellborder='1' color='blue' cellspacing='0'>"
 var ReporteMbrFin string = "      </table> >]; }"
 var ReporteMbrAux string = ""
@@ -199,7 +201,13 @@ func LeerArchivo(ruta string) {
 
 	ReporteMbrInit = ReporteMbrInit + ReporteMbrAux + ReporteMbrFin
 	fmt.Println(ReporteMbrInit)
+	reiniciarGraphMbr()
+}
 
+func reiniciarGraphMbr() {
+	ReporteMbrInit = "digraph G{ tbl [shape=plaintext label=< <table border='0' cellborder='1' color='blue' cellspacing='0'>"
+	ReporteMbrFin = "      </table> >]; }"
+	ReporteMbrAux = ""
 }
 
 func leerBytes(manejador *os.File, number int) []byte {
@@ -211,4 +219,134 @@ func leerBytes(manejador *os.File, number int) []byte {
 	}
 
 	return bytes
+}
+
+func EliminarArchivo(ruta string) {
+	var seleccion int // Para leer elementos de teclado
+	_, err := os.Stat(ruta)
+	if err != nil {
+		fmt.Println("DISCO NO ENCONTRADO")
+		fmt.Println(err)
+	} else {
+		fmt.Println("¿Desea eliminar el disco? Presione 1 para continuar")
+		fmt.Scanf("%d\n", &seleccion)
+		if seleccion == 1 {
+
+			err := os.Remove(ruta)
+			if err != nil {
+				fmt.Printf("Error eliminando archivo: %v\n", err)
+			} else {
+				fmt.Println("Eliminado correctamente")
+			}
+
+		} else {
+			fmt.Println("No lo eliminaste")
+		}
+	}
+}
+
+func CrearParticiones() {
+	//El tamanio de la particion está en TamanioSint      --------
+	//Si esta en 'k'|'m'|'b' esta en DimenSin             --------
+	//Sobre que disco voy a trabajar es RutaSint          --------
+	//El tipo de particion 'E'|'P' esta en TypePartSint   --------
+	//El fit será w                                       --------
+	//EL nombre de la particion esta en NameSint          --------
+	dimension := strings.ToLower(DimenSin)
+
+	tamanio, _ := strconv.ParseInt(TamanioSint, 10, 64) //mi tamanio esta en el tipo correcto
+	fmt.Println("ojo al tejo", tamanio)
+	if tamanio > 0 {
+
+	} else {
+		fmt.Println("SIZE INCORRECTO DEL DISCO")
+		tamanio = 1024
+	}
+
+	if dimension == "k" {
+		tamanio += tamanio * 1024
+	} else if dimension == "m" {
+		tamanio += tamanio * 1024 * 1024
+	}
+
+	//vamos a leer el mbr 7u7 y actualizarla
+	manejadorLec, err := os.OpenFile(RutaSint, os.O_RDWR, 0644)
+	defer manejadorLec.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	m := Mbr{}
+
+	var size int = binary.Size(m)
+
+	leidoBytes := leerBytes(manejadorLec, size)
+	buffer := bytes.NewBuffer(leidoBytes)
+
+	fmt.Println(leidoBytes)
+
+	err = binary.Read(buffer, binary.BigEndian, &m)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for i := 0; i < 4; i++ {
+		if m.ParticionesMbr[i].StatusParticion == 'f' {
+			copy(m.ParticionesMbr[i].NameParticion[:], NameSint)
+			m.ParticionesMbr[i].StatusParticion = 'v'
+			m.ParticionesMbr[i].TypeParticion = TypePartSin[0]
+			m.ParticionesMbr[i].FitParticion = 'w'
+			m.ParticionesMbr[i].SizeParticion = tamanio
+			m.ParticionesMbr[i].StartParticion = 0
+			break
+		}
+
+	}
+
+	//Me voy a echar el disco xd
+
+	erro := os.Remove(RutaSint)
+	if erro != nil {
+		fmt.Printf("Error eliminando archivo: %v\n", erro)
+	} else {
+		fmt.Println("Eliminado correctamente")
+	}
+
+	//Escribimos el archivo con el mbr modificado UwU
+	soloCarpsFa := RutaSint
+	indice := strings.LastIndex(soloCarpsFa, "/")
+	soloCarpsFa = soloCarpsFa[0 : indice+1]
+
+	tamanioFa := m.TamanioMbr
+	rutaFa := RutaSint
+
+	errFa := os.MkdirAll(soloCarpsFa, 0777)
+	if errFa != nil {
+		fmt.Println(errFa)
+	}
+	fmt.Println(soloCarpsFa)
+	fmt.Println(rutaFa)
+	manejadorFa, err := os.Create(rutaFa)
+	defer manejadorFa.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var aux int8 = 0
+
+	var binarioInit bytes.Buffer
+	binary.Write(&binarioInit, binary.BigEndian, &aux)
+	escribirBytes(manejadorFa, binarioInit.Bytes())
+
+	manejadorFa.Seek(tamanioFa-1, 0)
+	var binarioFin bytes.Buffer
+	binary.Write(&binarioFin, binary.BigEndian, &aux)
+	escribirBytes(manejadorFa, binarioFin.Bytes())
+
+	manejadorFa.Seek(0, 0)
+	var binarioMbr bytes.Buffer
+	binary.Write(&binarioMbr, binary.BigEndian, &m)
+	escribirBytes(manejadorFa, binarioMbr.Bytes())
+	reinit()
 }

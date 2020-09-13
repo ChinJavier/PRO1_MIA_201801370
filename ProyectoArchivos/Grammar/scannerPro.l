@@ -87,6 +87,7 @@ type		lval.cad = string(l.TokenBytes(nil)); return T_TYPE
 fit			lval.cad = string(l.TokenBytes(nil)); return T_FIT 
 delete		lval.cad = string(l.TokenBytes(nil)); return T_DELETE
 add			lval.cad = string(l.TokenBytes(nil)); return T_ADD
+rep         lval.cad = string(l.TokenBytes(nil)); return T_REP
 
 pause       lval.cad = string(l.TokenBytes(nil)); return T_PAUSE
 {letra_}    lval.cad = string(l.TokenBytes(nil)); return T_LETRA

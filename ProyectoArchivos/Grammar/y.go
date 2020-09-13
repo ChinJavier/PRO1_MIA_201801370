@@ -9,7 +9,7 @@ import __yyfmt__ "fmt"
 //line parserPro.y:3
 
 import (
-	"ProyectoArchivos/comandos"
+	"PRO1_MIA_201801370/ProyectoArchivos/comandos"
 	"bufio"
 	"bytes"
 	"fmt"
@@ -75,7 +75,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line parserPro.y:57
+//line parserPro.y:62
 
 func ScannearEntrada() {
 	reader := bufio.NewReader(os.Stdin)
@@ -131,48 +131,58 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 37
+const yyLast = 58
 
 var yyAct = [...]int{
-	15, 10, 11, 7, 36, 13, 35, 14, 33, 32,
-	16, 17, 18, 19, 2, 31, 37, 30, 3, 4,
-	23, 9, 29, 5, 6, 22, 24, 25, 28, 26,
-	21, 20, 27, 34, 12, 8, 1,
+	25, 14, 10, 11, 7, 23, 30, 24, 48, 13,
+	26, 27, 28, 29, 2, 53, 50, 44, 3, 4,
+	18, 47, 22, 5, 6, 17, 19, 20, 45, 43,
+	42, 41, 40, 39, 38, 37, 36, 35, 34, 33,
+	32, 31, 9, 21, 15, 54, 52, 49, 57, 51,
+	46, 16, 58, 56, 55, 12, 8, 1,
 }
 
 var yyPact = [...]int{
-	7, -1000, -20, -1000, -22, -21, -8, 23, -22, -1000,
-	12, 21, -1000, 26, -1000, -1000, -1000, -1000, -1000, -1000,
-	19, -1000, 13, 8, 6, 0, -1000, -1000, -2, 28,
-	-4, -18, 10, -1000, -1000, -1000, -1000, -1000,
+	7, -1000, -19, -1000, -21, -20, -22, 36, -21, -1000,
+	12, 35, -22, -1000, -8, 32, -1000, 31, 30, 29,
+	28, 27, -1000, 26, 25, 24, 23, 22, 21, 20,
+	8, 18, 45, 11, -14, 41, 6, 44, 40, 5,
+	39, 50, 49, 43, 48, -1000, -1000, -1000, -1000, -1000,
+	-1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 36, 35, 21, 34,
+	0, 57, 56, 42, 55, 9,
 }
 
 var yyR1 = [...]int{
 	0, 1, 1, 1, 1, 1, 2, 2, 3, 3,
-	3, 3, 4, 4, 4, 4, 4, 4, 4,
+	3, 3, 4, 4, 5, 5, 5, 5, 5, 5,
+	5, 5,
 }
 
 var yyR2 = [...]int{
-	0, 5, 1, 2, 3, 2, 2, 1, 4, 4,
-	4, 4, 2, 1, 1, 1, 1, 1, 1,
+	0, 5, 1, 2, 5, 2, 2, 1, 4, 4,
+	4, 4, 2, 1, 4, 4, 4, 4, 4, 4,
+	4, 4,
 }
 
 var yyChk = [...]int{
 	-1000, -1, 7, 11, 12, 16, 17, 23, -2, -3,
-	23, 23, -4, 13, 15, 8, 18, 19, 20, 21,
-	8, -3, 13, 8, 14, 15, 8, 6, 9, 9,
-	9, 9, 9, 10, 5, 10, 22, 6,
+	23, 23, -4, -5, 23, 8, -3, 13, 8, 14,
+	15, 8, -5, 13, 15, 8, 18, 19, 20, 21,
+	14, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+	9, 9, 9, 9, 9, 10, 5, 10, 22, 6,
+	10, 5, 6, 10, 6, 4, 4, 5, 4,
 }
 
 var yyDef = [...]int{
 	0, -2, 0, 2, 0, 0, 0, 0, 3, 7,
-	0, 0, 5, 0, 13, 14, 15, 16, 17, 18,
-	0, 6, 0, 0, 0, 0, 4, 12, 0, 0,
-	0, 0, 0, 1, 8, 9, 10, 11,
+	0, 0, 5, 13, 0, 0, 6, 0, 0, 0,
+	0, 0, 12, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 1, 8, 9, 10, 11,
+	4, 14, 15, 16, 17, 18, 19, 20, 21,
 }
 
 var yyTok1 = [...]int{
@@ -550,16 +560,18 @@ yydefault:
 			comandos.CrearArchivo(comandos.TamanioSint, comandos.RutaSint, comandos.NameSint, comandos.DimenSin)
 		}
 	case 4:
-		yyDollar = yyS[yypt-3 : yypt+1]
+		yyDollar = yyS[yypt-5 : yypt+1]
 //line parserPro.y:34
 		{
 			fmt.Println("Comando RMDISK")
+			comandos.EliminarArchivo(yyDollar[5].cad)
 		}
 	case 5:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line parserPro.y:35
 		{
 			fmt.Println("Comando FDISK")
+			comandos.CrearParticiones()
 		}
 	case 6:
 		yyDollar = yyS[yypt-2 : yypt+1]
@@ -606,29 +618,49 @@ yydefault:
 		{
 		}
 	case 14:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line parserPro.y:50
-		{
-		}
-	case 15:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line parserPro.y:51
-		{
-		}
-	case 16:
-		yyDollar = yyS[yypt-1 : yypt+1]
+		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:52
 		{
+			comandos.TamanioSint = yyDollar[4].cad
 		}
-	case 17:
-		yyDollar = yyS[yypt-1 : yypt+1]
+	case 15:
+		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:53
 		{
+			comandos.DimenSin = yyDollar[4].cad
 		}
-	case 18:
-		yyDollar = yyS[yypt-1 : yypt+1]
+	case 16:
+		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:54
 		{
+			comandos.RutaSint = yyDollar[4].cad
+		}
+	case 17:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line parserPro.y:55
+		{
+			comandos.TypePartSin = yyDollar[4].cad
+		}
+	case 18:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line parserPro.y:56
+		{
+		}
+	case 19:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line parserPro.y:57
+		{
+		}
+	case 20:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line parserPro.y:58
+		{
+		}
+	case 21:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line parserPro.y:59
+		{
+			comandos.NameSint = yyDollar[4].cad
 		}
 	}
 	goto yystack /* stack new state and value */

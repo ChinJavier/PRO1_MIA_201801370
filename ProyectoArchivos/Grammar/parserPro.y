@@ -3,7 +3,7 @@
 package Grammar
 
 import(
-  "ProyectoArchivos/comandos"
+  "PRO1_MIA_201801370/ProyectoArchivos/comandos"
   "strings"
   "fmt"
   "bytes"
@@ -18,9 +18,9 @@ import(
     cad string
 }
 
-%token <cad> T_ID T_NUMERO T_LETRA T_EXEC T_PATH T_ARROW T_ROUTE T_PAUSE T_MKDISK T_SIZE T_NAME T_UNIT T_RMDISK T_FDISK T_TYPE T_FIT T_DELETE T_ADD T_ARC_DKS
+%token <cad> T_ID T_NUMERO T_LETRA T_EXEC T_PATH T_ARROW T_ROUTE T_PAUSE T_MKDISK T_SIZE T_NAME T_UNIT T_RMDISK T_FDISK T_TYPE T_FIT T_DELETE T_ADD T_ARC_DKS T_REP
 
-%type <cad> main listaMkDisk atributosMkDisk atributosFDisk
+%type <cad> main listaMkDisk atributosMkDisk listaFDisk atributosFDisk
 
 
 %start main
@@ -31,8 +31,9 @@ import(
 main : T_EXEC '-' T_PATH T_ARROW T_ROUTE   {fmt.Println("Comando EXEC")}
      | T_PAUSE                             {fmt.Println("Comando PAUSE")}
      | T_MKDISK	listaMkDisk		  	       {fmt.Println("Comando MKDISK"); comandos.CrearArchivo(comandos.TamanioSint,comandos.RutaSint,comandos.NameSint, comandos.DimenSin)}
-	 | T_RMDISK '-' T_PATH				   {fmt.Println("Comando RMDISK")}
-	 | T_FDISK atributosFDisk              {fmt.Println("Comando FDISK")}
+	 | T_RMDISK '-' T_PATH T_ARROW T_ROUTE {fmt.Println("Comando RMDISK"); 	comandos.EliminarArchivo($5)}
+	 | T_FDISK listaFDisk                  {fmt.Println("Comando FDISK"); comandos.CrearParticiones()}
+	 | T_REP                               {}
      ;
 
 listaMkDisk : listaMkDisk atributosMkDisk {}
@@ -45,13 +46,18 @@ atributosMkDisk : '-' T_SIZE T_ARROW T_NUMERO {	comandos.TamanioSint = $4 }
 				| '-' T_UNIT T_ARROW T_LETRA { comandos.DimenSin = $4 }
 	 			;
 
-atributosFDisk : T_SIZE T_LETRA {}
-			   | T_UNIT {}
-			   | T_PATH {}
-			   | T_TYPE {}
-			   | T_FIT {}
-			   | T_DELETE {}
-			   | T_ADD {}
+listaFDisk : listaFDisk atributosFDisk  {}
+		   | atributosFDisk {}
+	       ;
+
+atributosFDisk : '-' T_SIZE T_ARROW T_NUMERO { comandos.TamanioSint = $4 }
+			   | '-' T_UNIT T_ARROW T_LETRA { comandos.DimenSin = $4 }
+			   | '-' T_PATH T_ARROW T_ROUTE { comandos.RutaSint = $4 }
+			   | '-' T_TYPE T_ARROW T_LETRA { comandos.TypePartSin = $4 }
+			   | '-' T_FIT T_ARROW  T_ID {}
+			   | '-' T_DELETE T_ARROW  T_ID {}
+			   | '-' T_ADD T_ARROW T_NUMERO {}
+			   | '-' T_NAME T_ARROW T_ID { comandos.NameSint = $4 }
 			   ;
 
 %%
