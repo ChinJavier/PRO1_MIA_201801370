@@ -27,6 +27,10 @@ var ReporteMbrInit string = "digraph G{ tbl [shape=plaintext label=< <table bord
 var ReporteMbrFin string = "      </table> >]; } \n"
 var ReporteMbrAux string = ""
 
+var ReporteDiscoInit string = "digraph G{ tbl [shape=plaintext label=< <table border='0' cellborder='1' color='blue' cellspacing='0'> <tr> \n"
+var ReporteDiscoFin string = "  </tr> </table> >]; } \n"
+var ReporteDiscoAux string = ""
+
 /*func ImprimirSint() {
 	fmt.Println("¿¿¿¿", TamanioSint)
 	fmt.Println("¿¿¿¿", RutaSint)
@@ -212,7 +216,9 @@ func LeerArchivo(ruta string) {
 	ReporteMbrAux += "<tr> <td>Fecha</td> <td>" + string(m.FechaMbr[:]) + "</td></tr> \n"
 	ReporteMbrAux += "<tr> <td>Signature</td> <td>" + strconv.FormatInt(m.SignatureMbr, 10) + "</td></tr> \n"
 
+	ReporteDiscoAux += "<td>MBR " + strconv.Itoa(binary.Size(m)) + "</td> \n"
 	for i := 0; i < 4; i++ {
+
 		ReporteMbrAux += "<tr> <td colspan='2'> Particion" + strconv.Itoa(i+1) + "</td> </tr> \n"
 		ReporteMbrAux += "<tr> <td>Fit</td> <td>" + string(m.ParticionesMbr[i].FitParticion) + "</td></tr> \n"
 		ReporteMbrAux += "<tr> <td>Name</td> <td>" + arregloComoCadena(m.ParticionesMbr[i].NameParticion) + "</td></tr> \n"
@@ -220,14 +226,33 @@ func LeerArchivo(ruta string) {
 		ReporteMbrAux += "<tr> <td>Start</td> <td>" + strconv.FormatInt(m.ParticionesMbr[i].StartParticion, 10) + "</td></tr> \n"
 		ReporteMbrAux += "<tr> <td>Status</td> <td>" + string(m.ParticionesMbr[i].StatusParticion) + "</td></tr> \n"
 		ReporteMbrAux += "<tr> <td>Type</td> <td>" + string(m.ParticionesMbr[i].TypeParticion) + "</td></tr> \n"
+
+		ReporteDiscoAux += "<td bgcolor=" + "\"" + obtenerColor(m.ParticionesMbr[i].TypeParticion) + "\"" + ">" + arregloComoCadena(m.ParticionesMbr[i].NameParticion) + " " + strconv.FormatInt(m.ParticionesMbr[i].SizeParticion, 10) + "</td> \n"
+
 	}
 
 	ReporteMbrInit = ReporteMbrInit + ReporteMbrAux + ReporteMbrFin
+	ReporteDiscoInit = ReporteDiscoInit + ReporteDiscoAux + ReporteDiscoFin
 	fmt.Println(ReporteMbrInit)
 	crearDot()
 	crearImg()
 	reiniciarGraphMbr()
+
+	crearDot2()
+	crearImg2()
+	reiniciarGraphDisco()
+
 	reinit2()
+}
+
+func obtenerColor(color byte) string {
+	if color == 'P' {
+		return "Green"
+	}
+	if color == 'E' {
+		return "Yellow"
+	}
+	return "Blue"
 }
 
 func arregloComoCadena(arre [16]byte) string {
@@ -266,6 +291,34 @@ func reiniciarGraphMbr() {
 	ReporteMbrInit = "digraph G{ tbl [shape=plaintext label=< <table border='0' cellborder='1' color='blue' cellspacing='0'> \n"
 	ReporteMbrFin = "      </table> >]; } \n"
 	ReporteMbrAux = ""
+}
+
+func crearDot2() {
+	man, err := os.Create("/home/repo2.txt")
+	defer man.Close()
+	if err != nil {
+		return
+	}
+	man.WriteString(ReporteDiscoInit)
+}
+
+func crearImg2() {
+	cmCon := exec.Command("dot", "-Tjpg", "/home/repo2.txt", "-o", "/home/repo2.jpg")
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmCon.Stdout = &out
+	cmCon.Stderr = &stderr
+	err := cmCon.Run()
+	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		return
+	}
+}
+
+func reiniciarGraphDisco() {
+	ReporteDiscoInit = "digraph G{ tbl [shape=plaintext label=< <table border='0' cellborder='1' color='blue' cellspacing='0'> <tr> \n"
+	ReporteDiscoFin = "  </tr> </table> >]; } \n"
+	ReporteDiscoAux = ""
 }
 
 func leerBytes(manejador *os.File, number int) []byte {
