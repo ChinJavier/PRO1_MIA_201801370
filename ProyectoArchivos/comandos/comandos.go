@@ -1,12 +1,14 @@
 package comandos
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/binary"
 	"fmt"
 	"log"
 	"math/rand"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -21,8 +23,8 @@ var DimenSin string = "v"
 
 var TypePartSin string = ""
 
-var ReporteMbrInit string = "digraph G{ tbl [shape=plaintext label=< <table border='0' cellborder='1' color='blue' cellspacing='0'>"
-var ReporteMbrFin string = "      </table> >]; }"
+var ReporteMbrInit string = "digraph G{ tbl [shape=plaintext label=< <table border='0' cellborder='1' color='blue' cellspacing='0'> \n"
+var ReporteMbrFin string = "      </table> >]; } \n"
 var ReporteMbrAux string = ""
 
 /*func ImprimirSint() {
@@ -43,9 +45,15 @@ type Particion struct {
 
 type Mbr struct {
 	TamanioMbr     int64
-	FechaMbr       [20]byte
+	FechaMbr       [18]byte
 	SignatureMbr   int64
 	ParticionesMbr [4]Particion
+}
+
+func Esperar() {
+	fmt.Print("... ")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
+	fmt.Println("")
 }
 
 func CrearArchivo(tam string, ruta string, name string, dimension string) {
@@ -99,12 +107,20 @@ func CrearArchivo(tam string, ruta string, name string, dimension string) {
 	copy(indiceMaster.FechaMbr[:], time.Now().String())
 	indiceMaster.ParticionesMbr[0].StatusParticion = 'f'
 	indiceMaster.ParticionesMbr[0].SizeParticion = 0
+	indiceMaster.ParticionesMbr[0].FitParticion = 'w'
+	indiceMaster.ParticionesMbr[0].TypeParticion = '-'
 	indiceMaster.ParticionesMbr[1].StatusParticion = 'f'
 	indiceMaster.ParticionesMbr[1].SizeParticion = 0
+	indiceMaster.ParticionesMbr[1].FitParticion = 'w'
+	indiceMaster.ParticionesMbr[1].TypeParticion = '-'
 	indiceMaster.ParticionesMbr[2].StatusParticion = 'f'
 	indiceMaster.ParticionesMbr[2].SizeParticion = 0
+	indiceMaster.ParticionesMbr[2].FitParticion = 'w'
+	indiceMaster.ParticionesMbr[2].TypeParticion = '-'
 	indiceMaster.ParticionesMbr[3].StatusParticion = 'f'
 	indiceMaster.ParticionesMbr[3].SizeParticion = 0
+	indiceMaster.ParticionesMbr[3].FitParticion = 'w'
+	indiceMaster.ParticionesMbr[3].TypeParticion = '-'
 	var binarioMbr bytes.Buffer
 	binary.Write(&binarioMbr, binary.BigEndian, &indiceMaster)
 	escribirBytes(manejador, binarioMbr.Bytes())
@@ -146,6 +162,14 @@ func reinit() {
 	DimenSin = "v"
 }
 
+func reinit2() {
+	TamanioSint = ""
+	RutaSint = ""
+	NameSint = ""
+	DimenSin = "v"
+	TypePartSin = ""
+}
+
 func LeerArchivo(ruta string) {
 
 	manejadorLec, err := os.OpenFile(ruta, os.O_RDWR, 0644)
@@ -168,7 +192,6 @@ func LeerArchivo(ruta string) {
 		log.Fatal(err)
 	}
 
-	fmt.Println(m)
 	fmt.Println("******************", m.TamanioMbr)
 	fmt.Println(string(m.FechaMbr[:]))
 	fmt.Println(m.SignatureMbr)
@@ -184,29 +207,64 @@ func LeerArchivo(ruta string) {
 
 	//ESTO ES PARA GRAPHVIZ
 
-	ReporteMbrAux += "<tr> <td colspan='2'> Reporte MBR </td> </tr>"
-	ReporteMbrAux += "<tr> <td>Tamanio</td> <td>" + strconv.FormatInt(m.TamanioMbr, 10) + "</td></tr>"
-	ReporteMbrAux += "<tr> <td>Fecha</td> <td>" + string(m.FechaMbr[:]) + "</td></tr>"
-	ReporteMbrAux += "<tr> <td>Signature</td> <td>" + strconv.FormatInt(m.SignatureMbr, 10) + "</td></tr>"
+	ReporteMbrAux += "<tr> <td colspan='2'> Reporte MBR </td> </tr> \n"
+	ReporteMbrAux += "<tr> <td>Tamanio</td> <td>" + strconv.FormatInt(m.TamanioMbr, 10) + "</td></tr> \n"
+	ReporteMbrAux += "<tr> <td>Fecha</td> <td>" + string(m.FechaMbr[:]) + "</td></tr> \n"
+	ReporteMbrAux += "<tr> <td>Signature</td> <td>" + strconv.FormatInt(m.SignatureMbr, 10) + "</td></tr> \n"
 
 	for i := 0; i < 4; i++ {
-		ReporteMbrAux += "<tr> <td colspan='2'> Particion" + strconv.Itoa(i+1) + "</td> </tr>"
-		ReporteMbrAux += "<tr> <td>Fit</td> <td>" + string(m.ParticionesMbr[i].FitParticion) + "</td></tr>"
-		ReporteMbrAux += "<tr> <td>Name</td> <td>" + string(m.ParticionesMbr[i].NameParticion[:]) + "</td></tr>"
-		ReporteMbrAux += "<tr> <td>Tamanio</td> <td>" + strconv.FormatInt(m.ParticionesMbr[i].SizeParticion, 10) + "</td></tr>"
-		ReporteMbrAux += "<tr> <td>Start</td> <td>" + strconv.FormatInt(m.ParticionesMbr[i].StartParticion, 10) + "</td></tr>"
-		ReporteMbrAux += "<tr> <td>Status</td> <td>" + string(m.ParticionesMbr[i].StatusParticion) + "</td></tr>"
-		ReporteMbrAux += "<tr> <td>Type</td> <td>" + string(m.ParticionesMbr[i].TypeParticion) + "</td></tr>"
+		ReporteMbrAux += "<tr> <td colspan='2'> Particion" + strconv.Itoa(i+1) + "</td> </tr> \n"
+		ReporteMbrAux += "<tr> <td>Fit</td> <td>" + string(m.ParticionesMbr[i].FitParticion) + "</td></tr> \n"
+		ReporteMbrAux += "<tr> <td>Name</td> <td>" + arregloComoCadena(m.ParticionesMbr[i].NameParticion) + "</td></tr> \n"
+		ReporteMbrAux += "<tr> <td>Tamanio</td> <td>" + strconv.FormatInt(m.ParticionesMbr[i].SizeParticion, 10) + "</td></tr> \n"
+		ReporteMbrAux += "<tr> <td>Start</td> <td>" + strconv.FormatInt(m.ParticionesMbr[i].StartParticion, 10) + "</td></tr> \n"
+		ReporteMbrAux += "<tr> <td>Status</td> <td>" + string(m.ParticionesMbr[i].StatusParticion) + "</td></tr> \n"
+		ReporteMbrAux += "<tr> <td>Type</td> <td>" + string(m.ParticionesMbr[i].TypeParticion) + "</td></tr> \n"
 	}
 
 	ReporteMbrInit = ReporteMbrInit + ReporteMbrAux + ReporteMbrFin
 	fmt.Println(ReporteMbrInit)
+	crearDot()
+	crearImg()
 	reiniciarGraphMbr()
+	reinit2()
+}
+
+func arregloComoCadena(arre [16]byte) string {
+	salida := ""
+	for i := 0; i < 16; i++ {
+		if arre[i] != 0 {
+			salida += string(arre[i])
+		}
+	}
+	return salida
+}
+
+func crearDot() {
+	man, err := os.Create("/home/repo1.txt")
+	defer man.Close()
+	if err != nil {
+		return
+	}
+	man.WriteString(ReporteMbrInit)
+}
+
+func crearImg() {
+	cmCon := exec.Command("dot", "-Tjpg", "/home/repo1.txt", "-o", "/home/repo1.jpg")
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmCon.Stdout = &out
+	cmCon.Stderr = &stderr
+	err := cmCon.Run()
+	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		return
+	}
 }
 
 func reiniciarGraphMbr() {
-	ReporteMbrInit = "digraph G{ tbl [shape=plaintext label=< <table border='0' cellborder='1' color='blue' cellspacing='0'>"
-	ReporteMbrFin = "      </table> >]; }"
+	ReporteMbrInit = "digraph G{ tbl [shape=plaintext label=< <table border='0' cellborder='1' color='blue' cellspacing='0'> \n"
+	ReporteMbrFin = "      </table> >]; } \n"
 	ReporteMbrAux = ""
 }
 
@@ -255,7 +313,7 @@ func CrearParticiones() {
 	dimension := strings.ToLower(DimenSin)
 
 	tamanio, _ := strconv.ParseInt(TamanioSint, 10, 64) //mi tamanio esta en el tipo correcto
-	fmt.Println("ojo al tejo", tamanio)
+	//fmt.Println("ojo al tejo", tamanio)
 	if tamanio > 0 {
 
 	} else {
@@ -283,13 +341,14 @@ func CrearParticiones() {
 	leidoBytes := leerBytes(manejadorLec, size)
 	buffer := bytes.NewBuffer(leidoBytes)
 
-	fmt.Println(leidoBytes)
+	//fmt.Println(leidoBytes)
 
 	err = binary.Read(buffer, binary.BigEndian, &m)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	var bandera bool = false
 	for i := 0; i < 4; i++ {
 		if m.ParticionesMbr[i].StatusParticion == 'f' {
 			copy(m.ParticionesMbr[i].NameParticion[:], NameSint)
@@ -297,10 +356,18 @@ func CrearParticiones() {
 			m.ParticionesMbr[i].TypeParticion = TypePartSin[0]
 			m.ParticionesMbr[i].FitParticion = 'w'
 			m.ParticionesMbr[i].SizeParticion = tamanio
-			m.ParticionesMbr[i].StartParticion = 0
+			if i == 0 {
+				m.ParticionesMbr[i].StartParticion = int64(binary.Size(m)) + 1
+			} else {
+				m.ParticionesMbr[i].StartParticion = m.ParticionesMbr[i-1].StartParticion + m.ParticionesMbr[i-1].SizeParticion
+			}
+			bandera = true
 			break
 		}
 
+	}
+	if !bandera {
+		fmt.Println("YA NO HAY ESPACIO")
 	}
 
 	//Me voy a echar el disco xd
@@ -309,7 +376,7 @@ func CrearParticiones() {
 	if erro != nil {
 		fmt.Printf("Error eliminando archivo: %v\n", erro)
 	} else {
-		fmt.Println("Eliminado correctamente")
+		//fmt.Println("Eliminado correctamente")
 	}
 
 	//Escribimos el archivo con el mbr modificado UwU

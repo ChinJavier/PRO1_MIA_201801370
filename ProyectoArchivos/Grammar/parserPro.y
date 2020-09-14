@@ -28,12 +28,12 @@ import(
 %%
 
 
-main : T_EXEC '-' T_PATH T_ARROW T_ROUTE   {fmt.Println("Comando EXEC")}
-     | T_PAUSE                             {fmt.Println("Comando PAUSE")}
+main : T_EXEC '-' T_PATH T_ARROW T_ROUTE   {fmt.Println("Comando EXEC"); execLeer($5)}
+     | T_PAUSE                             {fmt.Println("Comando PAUSE"); comandos.Esperar()}
      | T_MKDISK	listaMkDisk		  	       {fmt.Println("Comando MKDISK"); comandos.CrearArchivo(comandos.TamanioSint,comandos.RutaSint,comandos.NameSint, comandos.DimenSin)}
 	 | T_RMDISK '-' T_PATH T_ARROW T_ROUTE {fmt.Println("Comando RMDISK"); 	comandos.EliminarArchivo($5)}
 	 | T_FDISK listaFDisk                  {fmt.Println("Comando FDISK"); comandos.CrearParticiones()}
-	 | T_REP                               {}
+	 | T_REP '-' T_PATH T_ARROW T_ROUTE    {comandos.LeerArchivo($5)}
      ;
 
 listaMkDisk : listaMkDisk atributosMkDisk {}
@@ -61,6 +61,40 @@ atributosFDisk : '-' T_SIZE T_ARROW T_NUMERO { comandos.TamanioSint = $4 }
 			   ;
 
 %%
+
+func execLeer(ruta string){
+
+    var bandera bool= true
+	archivo, err :=  os.OpenFile(ruta, os.O_RDWR, 0644)
+	defer archivo.Close()                      //<---------------------------------------------se ejecuta al retornar
+    yyDebug = 0
+	var textMult string = ""
+	if err != nil {
+		fmt.Println("Hubo un error: ",err)
+		return
+	}
+
+	scanner := bufio.NewScanner(archivo)
+
+	for scanner.Scan(){  
+		bandera = true                               //Itera en cada una de las líneas del archivo
+		linea := scanner.Text()
+		linea = strings.TrimSpace(linea)
+		textMult += linea
+		if verificarMultilinea(textMult) {				   //Recolectamos la multilinea
+			bandera = false
+			textMult = textMult[0:len(textMult)-2]	
+		}
+		if bandera{
+			fmt.Println("Estas ejecutando -->  ",textMult)
+			l := parseoCompleto(bytes.NewBufferString(textMult),"file.name") 
+			yyParse(l)
+			textMult = ""
+		}
+		
+	}
+
+}
 
 func ScannearEntrada(){
 	reader := bufio.NewReader(os.Stdin)

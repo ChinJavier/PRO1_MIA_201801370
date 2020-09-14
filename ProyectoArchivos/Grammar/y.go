@@ -42,6 +42,7 @@ const T_FIT = 57361
 const T_DELETE = 57362
 const T_ADD = 57363
 const T_ARC_DKS = 57364
+const T_REP = 57365
 
 var yyToknames = [...]string{
 	"$end",
@@ -66,6 +67,7 @@ var yyToknames = [...]string{
 	"T_DELETE",
 	"T_ADD",
 	"T_ARC_DKS",
+	"T_REP",
 	"'-'",
 }
 
@@ -75,7 +77,41 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line parserPro.y:62
+//line parserPro.y:63
+
+func execLeer(ruta string) {
+
+	var bandera bool = true
+	archivo, err := os.OpenFile(ruta, os.O_RDWR, 0644)
+	defer archivo.Close() //<---------------------------------------------se ejecuta al retornar
+	yyDebug = 0
+	var textMult string = ""
+	if err != nil {
+		fmt.Println("Hubo un error: ", err)
+		return
+	}
+
+	scanner := bufio.NewScanner(archivo)
+
+	for scanner.Scan() {
+		bandera = true //Itera en cada una de las líneas del archivo
+		linea := scanner.Text()
+		linea = strings.TrimSpace(linea)
+		textMult += linea
+		if verificarMultilinea(textMult) { //Recolectamos la multilinea
+			bandera = false
+			textMult = textMult[0 : len(textMult)-2]
+		}
+		if bandera {
+			fmt.Println("Estas ejecutando -->  ", textMult)
+			l := parseoCompleto(bytes.NewBufferString(textMult), "file.name")
+			yyParse(l)
+			textMult = ""
+		}
+
+	}
+
+}
 
 func ScannearEntrada() {
 	reader := bufio.NewReader(os.Stdin)
@@ -131,58 +167,62 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 58
+const yyLast = 63
 
 var yyAct = [...]int{
-	25, 14, 10, 11, 7, 23, 30, 24, 48, 13,
-	26, 27, 28, 29, 2, 53, 50, 44, 3, 4,
-	18, 47, 22, 5, 6, 17, 19, 20, 45, 43,
-	42, 41, 40, 39, 38, 37, 36, 35, 34, 33,
-	32, 31, 9, 21, 15, 54, 52, 49, 57, 51,
-	46, 16, 58, 56, 55, 12, 8, 1,
+	27, 15, 11, 16, 12, 25, 32, 26, 8, 52,
+	28, 29, 30, 31, 2, 14, 63, 48, 3, 4,
+	20, 57, 47, 5, 6, 19, 21, 22, 54, 24,
+	7, 51, 49, 10, 46, 45, 44, 43, 42, 41,
+	40, 39, 38, 18, 37, 36, 35, 34, 33, 23,
+	17, 58, 56, 53, 61, 55, 50, 62, 60, 59,
+	13, 9, 1,
 }
 
 var yyPact = [...]int{
-	7, -1000, -19, -1000, -21, -20, -22, 36, -21, -1000,
-	12, 35, -22, -1000, -8, 32, -1000, 31, 30, 29,
-	28, 27, -1000, 26, 25, 24, 23, 22, 21, 20,
-	8, 18, 45, 11, -14, 41, 6, 44, 40, 5,
-	39, 50, 49, 43, 48, -1000, -1000, -1000, -1000, -1000,
-	-1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
+	7, -1000, -16, -1000, -22, -20, -23, -21, 42, -22,
+	-1000, 12, 41, -23, -1000, -8, 40, 38, -1000, 37,
+	36, 35, 33, 32, -1000, 31, 30, 29, 28, 27,
+	26, 25, 13, 8, 22, 51, 21, -13, 47, 18,
+	50, 46, 11, 45, 55, 54, 49, 53, 6, -1000,
+	-1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
+	-1000, -1000, -1000, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 57, 56, 42, 55, 9,
+	0, 62, 61, 33, 60, 15,
 }
 
 var yyR1 = [...]int{
-	0, 1, 1, 1, 1, 1, 2, 2, 3, 3,
-	3, 3, 4, 4, 5, 5, 5, 5, 5, 5,
-	5, 5,
+	0, 1, 1, 1, 1, 1, 1, 2, 2, 3,
+	3, 3, 3, 4, 4, 5, 5, 5, 5, 5,
+	5, 5, 5,
 }
 
 var yyR2 = [...]int{
-	0, 5, 1, 2, 5, 2, 2, 1, 4, 4,
-	4, 4, 2, 1, 4, 4, 4, 4, 4, 4,
-	4, 4,
+	0, 5, 1, 2, 5, 2, 5, 2, 1, 4,
+	4, 4, 4, 2, 1, 4, 4, 4, 4, 4,
+	4, 4, 4,
 }
 
 var yyChk = [...]int{
-	-1000, -1, 7, 11, 12, 16, 17, 23, -2, -3,
-	23, 23, -4, -5, 23, 8, -3, 13, 8, 14,
-	15, 8, -5, 13, 15, 8, 18, 19, 20, 21,
-	14, 9, 9, 9, 9, 9, 9, 9, 9, 9,
-	9, 9, 9, 9, 9, 10, 5, 10, 22, 6,
-	10, 5, 6, 10, 6, 4, 4, 5, 4,
+	-1000, -1, 7, 11, 12, 16, 17, 23, 24, -2,
+	-3, 24, 24, -4, -5, 24, 24, 8, -3, 13,
+	8, 14, 15, 8, -5, 13, 15, 8, 18, 19,
+	20, 21, 14, 8, 9, 9, 9, 9, 9, 9,
+	9, 9, 9, 9, 9, 9, 9, 9, 9, 10,
+	5, 10, 22, 6, 10, 5, 6, 10, 6, 4,
+	4, 5, 4, 10,
 }
 
 var yyDef = [...]int{
-	0, -2, 0, 2, 0, 0, 0, 0, 3, 7,
-	0, 0, 5, 13, 0, 0, 6, 0, 0, 0,
-	0, 0, 12, 0, 0, 0, 0, 0, 0, 0,
+	0, -2, 0, 2, 0, 0, 0, 0, 0, 3,
+	8, 0, 0, 5, 14, 0, 0, 0, 7, 0,
+	0, 0, 0, 0, 13, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 1, 8, 9, 10, 11,
-	4, 14, 15, 16, 17, 18, 19, 20, 21,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	9, 10, 11, 12, 4, 15, 16, 17, 18, 19,
+	20, 21, 22, 6,
 }
 
 var yyTok1 = [...]int{
@@ -190,13 +230,13 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 23,
+	3, 3, 3, 3, 3, 24,
 }
 
 var yyTok2 = [...]int{
 	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
 	12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-	22,
+	22, 23,
 }
 
 var yyTok3 = [...]int{
@@ -545,12 +585,14 @@ yydefault:
 //line parserPro.y:31
 		{
 			fmt.Println("Comando EXEC")
+			execLeer(yyDollar[5].cad)
 		}
 	case 2:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line parserPro.y:32
 		{
 			fmt.Println("Comando PAUSE")
+			comandos.Esperar()
 		}
 	case 3:
 		yyDollar = yyS[yypt-2 : yypt+1]
@@ -574,77 +616,78 @@ yydefault:
 			comandos.CrearParticiones()
 		}
 	case 6:
-		yyDollar = yyS[yypt-2 : yypt+1]
-//line parserPro.y:38
+		yyDollar = yyS[yypt-5 : yypt+1]
+//line parserPro.y:36
 		{
+			comandos.LeerArchivo(yyDollar[5].cad)
 		}
 	case 7:
-		yyDollar = yyS[yypt-1 : yypt+1]
+		yyDollar = yyS[yypt-2 : yypt+1]
 //line parserPro.y:39
 		{
 		}
 	case 8:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line parserPro.y:42
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line parserPro.y:40
 		{
-			comandos.TamanioSint = yyDollar[4].cad
 		}
 	case 9:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:43
 		{
-			comandos.RutaSint = yyDollar[4].cad
+			comandos.TamanioSint = yyDollar[4].cad
 		}
 	case 10:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:44
 		{
-			comandos.NameSint = yyDollar[4].cad
+			comandos.RutaSint = yyDollar[4].cad
 		}
 	case 11:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:45
 		{
-			comandos.DimenSin = yyDollar[4].cad
+			comandos.NameSint = yyDollar[4].cad
 		}
 	case 12:
-		yyDollar = yyS[yypt-2 : yypt+1]
-//line parserPro.y:48
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line parserPro.y:46
 		{
+			comandos.DimenSin = yyDollar[4].cad
 		}
 	case 13:
-		yyDollar = yyS[yypt-1 : yypt+1]
+		yyDollar = yyS[yypt-2 : yypt+1]
 //line parserPro.y:49
 		{
 		}
 	case 14:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line parserPro.y:52
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line parserPro.y:50
 		{
-			comandos.TamanioSint = yyDollar[4].cad
 		}
 	case 15:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:53
 		{
-			comandos.DimenSin = yyDollar[4].cad
+			comandos.TamanioSint = yyDollar[4].cad
 		}
 	case 16:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:54
 		{
-			comandos.RutaSint = yyDollar[4].cad
+			comandos.DimenSin = yyDollar[4].cad
 		}
 	case 17:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:55
 		{
-			comandos.TypePartSin = yyDollar[4].cad
+			comandos.RutaSint = yyDollar[4].cad
 		}
 	case 18:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:56
 		{
+			comandos.TypePartSin = yyDollar[4].cad
 		}
 	case 19:
 		yyDollar = yyS[yypt-4 : yypt+1]
@@ -659,6 +702,11 @@ yydefault:
 	case 21:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line parserPro.y:59
+		{
+		}
+	case 22:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line parserPro.y:60
 		{
 			comandos.NameSint = yyDollar[4].cad
 		}

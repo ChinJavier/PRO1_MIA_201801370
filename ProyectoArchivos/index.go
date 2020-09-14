@@ -1,7 +1,7 @@
 package main
 
 import (
-	"PRO1_MIA_201801370/ProyectoArchivos/comandos"
+	"PRO1_MIA_201801370/ProyectoArchivos/Grammar"
 	"fmt"
 )
 
@@ -12,7 +12,7 @@ func main() {
 	fmt.Println("MIA A+")
 	fmt.Println("--->Arrancando...")
 	//comandos.EliminarArchivo("/home/mia/ufalala.dsk")
-	comandos.LeerArchivo("/home/mare/discku.dsk")
+	//comandos.LeerArchivo("/home/mare/discku.dsk")
 	//comandos.CrearArchivo("5", "/home/Mia4/probando", "paas.bin", "m")
-	//Grammar.ScannearEntrada()
+	Grammar.ScannearEntrada()
 }

@@ -63,14 +63,14 @@ letra_            [_a-zA-Z]|{unicodeLetra}
 arrow_			  \-\>
 route_            (\/[a-zA-z]([_a-zA-z]|[0-9])*)+(\/)?(\.[a-zA-z]+)?
 arch_dsk_		  {id_}\.dsk
-
+ignora_Coment_    \#(.)*
 
 %%
 	c = l.Rule0()
 
 [ \t\r\n]+
 
-
+{ignora_Coment_} lval.cad = string(l.TokenBytes(nil));
 exec        lval.cad = string(l.TokenBytes(nil)); return T_EXEC
 path		lval.cad = string(l.TokenBytes(nil)); return T_PATH
 {arrow_}    lval.cad = string(l.TokenBytes(nil)); return T_ARROW
